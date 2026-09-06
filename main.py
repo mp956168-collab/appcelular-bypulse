@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 from fpdf import FPDF
 
 try:
+    
     from flet_android_notifications import FletAndroidNotifications
     ANDROID_NOTIF_DISPONIBLE = True
 except ImportError:
@@ -23,6 +24,7 @@ MESES_ES = {
     "May": "mayo", "June": "junio", "July": "julio", "August": "agosto",
     "September": "septiembre", "October": "octubre", "November": "noviembre", "December": "diciembre"
 }
+
 
 def obtener_fecha_es():
     ahora = datetime.now(ZoneInfo("America/Bogota"))
@@ -86,6 +88,7 @@ def recalcular_metas(usuario_data):
                 elif cat == "Uso Fondo Meta":
                     acumulado -= monto
         meta["Actual"] = max(0.0, acumulado)
+
 
 def agregar_cabecera_pdf(pdf, titulo):
     logo_path = "logo-bytepulse.png"
@@ -276,6 +279,7 @@ def main(page: ft.Page):
                     logo_widget,
                     ft.Text(obtener_fecha_es(), size=11, color="grey"),
                     ft.Container(height=15),
+                 
                     ft.Text("🔑 Iniciar Sesión", size=16, weight=ft.FontWeight.BOLD),
                     user_input, pass_input,
                     ft.FilledButton("Entrar", on_click=intentar_login, width=280),
@@ -291,6 +295,7 @@ def main(page: ft.Page):
         page.clean()
         user_reg_input = ft.TextField(label="Nuevo Usuario", width=280)
         pass_reg_input = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=280)
+      
         tel_reg_input = ft.TextField(label="Número Telefónico (Recuperación)", prefix_icon="phone", keyboard_type=ft.KeyboardType.PHONE, width=280)
 
         def intentar_registro(e):
@@ -313,6 +318,7 @@ def main(page: ft.Page):
                 "checklist": {
                     "config": {
                         "mañana": "Revisa tus gastos hormiga de la mañana", "hora_mañana": "08:00 AM",
+                  
                         "tarde": "Registra tus movimientos de la tarde", "hora_tarde": "02:00 PM",
                         "noche": "Evalúa tu meta de ahorro nocturna", "hora_noche": "08:00 PM"
                     },
@@ -354,6 +360,7 @@ def main(page: ft.Page):
                     "noche": "Evalúa tu meta de ahorro nocturna", "hora_noche": "08:00 PM"
                 },
                 "dias": {},
+              
                 "metas_periodo": {"diaria": 10000.0, "semanal": 50000.0, "mensual": 200000.0}
             }
 
@@ -368,6 +375,7 @@ def main(page: ft.Page):
                 ft.Divider(),
                 ft.Row([ft.Icon(ft.Icons.PERSON, size=14, color="cyan"), ft.Text(uname, weight=ft.FontWeight.BOLD, color="white", size=12)], spacing=5),
                 ft.Text(obtener_fecha_es(), size=9, color="grey"),
+              
                 ft.Divider(),
             ], spacing=8, scroll=ft.ScrollMode.AUTO),
             width=250,
@@ -391,11 +399,13 @@ def main(page: ft.Page):
             sidebar.visible = False
             area_contenido.controls.clear()
             recalcular_metas(datos_user)
+          
             df = datos_user["transacciones"]
 
             if seccion == "Dashboard":
                 ingresos = sum(t["Monto"] for t in df if t["Tipo"] == "Ingreso")
                 gastos = sum(t["Monto"] for t in df if t["Tipo"] == "Gasto" and t["Categoría"] != "Uso Fondo Meta")
+              
                 ahorros = sum(t["Monto"] for t in df if t["Tipo"] == "Ahorro / Inversión")
 
                 area_contenido.controls.extend([
@@ -412,6 +422,7 @@ def main(page: ft.Page):
                 ])
 
                 tipos_conteo = {}
+               
                 for t in df:
                     tp = t.get("Tipo", "Gasto")
                     tipos_conteo[tp] = tipos_conteo.get(tp, 0) + t.get("Monto", 0)
@@ -419,6 +430,7 @@ def main(page: ft.Page):
                 total_monto_all = sum(tipos_conteo.values()) if tipos_conteo else 1
                 for tp, val in tipos_conteo.items():
                     porcentaje = (val / total_monto_all) * 100
+                 
                     area_contenido.controls.append(
                         ft.Column([
                             ft.Row([ft.Text(tp, size=13, weight=ft.FontWeight.BOLD), ft.Text(f"{formato_cop(val)} ({porcentaje:.1f}%)", size=12)], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -428,9 +440,11 @@ def main(page: ft.Page):
 
             elif seccion == "Movimientos":
                 tipo_input = ft.Dropdown(label="Tipo", options=[ft.dropdown.Option("Gasto"), ft.dropdown.Option("Ingreso"), ft.dropdown.Option("Deuda"), ft.dropdown.Option("Ahorro / Inversión")], value="Gasto")
+               
                 monto_input = ft.TextField(label="Monto (COP $)")
                 cat_input = ft.Dropdown(label="Categoría", options=[ft.dropdown.Option("Nómina"), ft.dropdown.Option("Alimentación"), ft.dropdown.Option("Servicios"), ft.dropdown.Option("Transporte"), ft.dropdown.Option("Ahorro Meta"), ft.dropdown.Option("Uso Fondo Meta"), ft.dropdown.Option("Otros")], value="Alimentación")
                 desc_input = ft.TextField(label="Descripción")
+               
                 meta_asoc_input = ft.Dropdown(label="Meta Asociada", options=[ft.dropdown.Option("Ninguna")] + [ft.dropdown.Option(m["Meta"]) for m in datos_user.get("metas", [])], value="Ninguna")
 
                 def guardar_mov(e):
@@ -797,12 +811,14 @@ def main(page: ft.Page):
                 ft.Container(width=40)
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             bgcolor="#111827",
+           
             padding=10
         )
 
         layout_principal = ft.Stack([
             ft.Column([
                 app_bar,
+              
                 ft.Container(content=area_contenido, expand=True, padding=15)
             ], expand=True),
             sidebar
