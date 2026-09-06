@@ -23,10 +23,13 @@ jobs:
             git zip unzip openjdk-17-jdk autoconf libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
 
-      - name: Instalar Buildozer y Cython
+      - name: Instalar Buildozer y Cython actualizados
         run: |
           pip install --upgrade pip
-          pip install cython==0.29.33 buildozer flet fpdf2
+          pip install --upgrade cython buildozer flet fpdf2
+
+      - name: Limpiar compilaciones anteriores
+        run: buildozer android clean
 
       - name: Compilar APK
         run: buildozer -v android debug
